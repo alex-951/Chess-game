@@ -5,7 +5,8 @@ understand the language better.
 # Features
 My implementation of Chess includes all the rules including en passant,
 castling, check-mate, and FEN string inputs to resume a previous
-game.
+game. Players also have the option to print all available moves and even
+highlight moves for selected pieces.
 # Starting a match
 Simply run the Main.java main method and begin a new chess game!
 # What's next
