@@ -19,7 +19,7 @@ public class Chess {
             myBoard.print();
             playerMove(myBoard);
 
-            if(checkMate(currPlayer.myColor, myBoard)){
+            if(checkMate(myBoard)){
                 myBoard.print();
                 System.out.println("**CheckMate**");
                 System.out.println(currPlayer.myColor+" Wins");
@@ -74,18 +74,13 @@ public class Chess {
     /**
      * This method checks whether the given color/player has successfully checkmated
      * the opponent.
-     * @param winner The color we want to check.
      * @param board The board being checked.
      * @return True/False, whether the given player has won.
      */
-    public static boolean checkMate(Piece.color winner, Board  board){
-        if(winner == Piece.color.White){
-            return board.playerBlack.filterMoves(board).isEmpty();
-        }
-        else if(winner == Piece.color.Black){
-            return board.playerWhite.filterMoves(board).isEmpty();
-        }
-        return false;
+    public static boolean checkMate(Board board){
+
+        Player loser = board.currentPlayer;
+        return loser.filterMoves(board).isEmpty();
     }
 
     /**
@@ -214,15 +209,23 @@ public class Chess {
                     break;
                 case 'K':
                     System.out.println("White can castle short-side");
+                    squares[0][4].counter = 0;
+                    squares[0][7].counter = 0;
                     break;
                 case 'Q':
                     System.out.println("White can castle queen-side");
+                    squares[0][4].counter = 0;
+                    squares[0][0].counter = 0;
                     break;
                 case 'k':
                     System.out.println("Black can castle short-side");
+                    squares[7][4].counter = 0;
+                    squares[7][7].counter = 0;
                     break;
                 case 'q':
                     System.out.println("Black can castle queen-side");
+                    squares[7][4].counter = 0;
+                    squares[7][0].counter = 0;
                     break;
             }
         }
@@ -234,6 +237,7 @@ public class Chess {
         }
         else{
             System.out.println("En-passant available at target square: "+stringArray[3]);
+
         }
         System.out.println();
 
@@ -248,9 +252,13 @@ public class Chess {
         //check the current player's turn
         if(stringArray[1].equals("w")){
             System.out.println("White to move: ");
+            board.currentPlayer = board.playerWhite;
+            board.nextPlayer = board.playerBlack;
         }
         else{
             System.out.println("Black to move: ");
+            board.currentPlayer = board.playerBlack;
+            board.nextPlayer = board.playerWhite;
         }
         return board;
     }
@@ -272,16 +280,21 @@ public class Chess {
                 runChess(new Board());
                 break;
             case 2:
+                System.out.print("Please input FEN string: ");
+                selection = input.nextLine();
+                runChess(Chess.inputFen(selection));
                 break;
         }
     }
 
     private static void playerOptions(Board board){
+        //create variables
         Scanner input = new Scanner(System.in);
         String selection = "0";
         String move;
         int[] from, to;
 
+        //loop through player selection until move is made
         while (Integer.parseInt(selection) != 1) {
         System.out.println("1: Make move");
         System.out.println("2: Highlight moves for a single piece");
@@ -292,8 +305,9 @@ public class Chess {
         }while(!selection.matches("[1-3]"));
         System.out.println();
 
-
             switch (Integer.parseInt(selection)) {
+
+                //player wants to make a move
                 case 1:
                     System.out.print("Please select a piece: ");
                     move = input.nextLine();
@@ -313,6 +327,8 @@ public class Chess {
 
                     board.move(from, to, board.currentPlayer.myColor);
                     break;
+
+                //player wants to highlight moves for a piece
                 case 2:
                     System.out.print("Please select a piece: ");
                     move = input.nextLine();
@@ -323,6 +339,8 @@ public class Chess {
                     from = Board.decodeMove(move);
                     board.highlightMovesFor(from);
                     break;
+
+                //player wants to highlight all moves
                 case 3:
                     board.currentPlayer.printAvailableMoves(board);
                     System.out.println();

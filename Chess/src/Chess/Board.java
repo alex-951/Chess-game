@@ -17,6 +17,7 @@ public class Board {
     public Piece[][] squares;
     public int[] prevMove;
     public Player currentPlayer;
+    public Player nextPlayer;
 
     /**
      * Constructor used to create a board, initializes pieces, players, pre move, and current player.
@@ -30,6 +31,7 @@ public class Board {
         prevMove = new int[2];
 
         currentPlayer = playerWhite;
+        nextPlayer = playerBlack;
 
         for(int y = 2; y < 6; y++){
             for(int x = 0; x < 8; x++){
@@ -144,24 +146,16 @@ public class Board {
      * @param color The color of the piece we are trying to move.
      */
     public void move(int[] from, int[] to, Piece.color color){
-
         ArrayList<ArrayList<int[]>> availableMoves;
 
-        if(playerWhite.myColor == color){
-            availableMoves = playerWhite.filterMoves(this);
-        }
-        else{
-            availableMoves = playerBlack.filterMoves(this);
-        }
+        availableMoves = currentPlayer.filterMoves(this);
 
         if(inPlayerMoveList(availableMoves, to, from)){
             makeMove(from, to);
             this.prevMove = to;
             checkForPromotion();
-
         }
-
-
+        else System.out.println("Not an available move!");
 
     }
 
@@ -183,12 +177,7 @@ public class Board {
         Piece dest = squares[to_y][to_x];
 
         //remove dest from player list
-        if(dest.isWhite()){
-            playerWhite.removePiece(dest);
-        }
-        else if(dest.isBlack()){
-            playerBlack.removePiece(dest);
-        }
+        if(dest.myColor != Piece.color.Empty) nextPlayer.removePiece(dest);
 
         //move src to new location
         squares[to_y][to_x] = src;
@@ -235,7 +224,9 @@ public class Board {
             }
         }
 
-        currentPlayer = opponent(currentPlayer);
+        Player temp = currentPlayer;
+        currentPlayer = nextPlayer;
+        nextPlayer = temp;
 
     }
 
@@ -331,6 +322,7 @@ public class Board {
     public void highlightMovesFor(int[] pos){
         ArrayList<int[]> list = squares[pos[1]][pos[0]].myMoves(this);
         ArrayList<Piece.color> list_Colors = new ArrayList<>();
+
         for (int[] ints : list) {
             int x_ = ints[0];
             int y_ = ints[1];
@@ -341,6 +333,7 @@ public class Board {
             piece.myColor = Piece.color.Highlight;
 
         }
+
 
         this.print();
 

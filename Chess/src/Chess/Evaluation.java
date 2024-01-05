@@ -39,7 +39,7 @@ public class Evaluation {
     private static int minimax(Board board, Player player, int depth){
         int eval = 0;
         int maxEval = Integer.MIN_VALUE;
-        if(depth == 0 || Chess.checkMate(Piece.color.White, board) || Chess.checkMate(Piece.color.Black, board)){
+        if(depth == 0 || Chess.checkMate(board) || Chess.checkMate(board)){
             return evaluatePosition(board, player, depth);
         }
 
